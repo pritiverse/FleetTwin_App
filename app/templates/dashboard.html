@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FleetTwin</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; background: #f7f8fa; color: #1f2933; }
+    header { padding: 18px 24px; background: #152238; color: white; }
+    main { padding: 24px; display: grid; gap: 18px; grid-template-columns: 320px 1fr; }
+    select, button { width: 100%; padding: 10px; margin-top: 8px; }
+    section { background: white; border: 1px solid #d9dee7; border-radius: 8px; padding: 16px; }
+    pre { white-space: pre-wrap; background: #f1f4f8; padding: 12px; border-radius: 6px; overflow: auto; }
+  </style>
+</head>
+<body>
+  <header><h1>FleetTwin</h1></header>
+  <main>
+    <section>
+      <h2>Transformers</h2>
+      <select id="transformers"></select>
+      <button id="refresh">Refresh</button>
+    </section>
+    <section>
+      <h2>Status</h2>
+      <pre id="status">Loading...</pre>
+      <h2>Fault Prediction</h2>
+      <pre id="prediction">Loading...</pre>
+      <h2>Health</h2>
+      <pre id="health">Loading...</pre>
+    </section>
+  </main>
+  <script>
+    const select = document.getElementById("transformers");
+    const statusBox = document.getElementById("status");
+    const predictionBox = document.getElementById("prediction");
+    const healthBox = document.getElementById("health");
+
+    async function asJson(url) {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(await response.text());
+      return response.json();
+    }
+
+    function show(box, data) {
+      box.textContent = JSON.stringify(data, null, 2);
+    }
+
+    async function loadTransformer(id) {
+      show(statusBox, await asJson(`/api/transformers/${id}/status`));
+      show(predictionBox, await asJson(`/api/transformers/${id}/predict`));
+      show(healthBox, await asJson(`/api/transformers/${id}/health`));
+    }
+
+    async function init() {
+      const rows = await asJson("/api/transformers");
+      select.innerHTML = rows.map(row => `<option value="${row.transformer_id}">${row.transformer_id} - ${row.fault_class}</option>`).join("");
+      if (rows.length) await loadTransformer(rows[0].transformer_id);
+    }
+
+    select.addEventListener("change", () => loadTransformer(select.value));
+    document.getElementById("refresh").addEventListener("click", init);
+    init().catch(error => {
+      statusBox.textContent = error.message;
+      predictionBox.textContent = "";
+      healthBox.textContent = "";
+    });
+  </script>
+</body>
+</html>

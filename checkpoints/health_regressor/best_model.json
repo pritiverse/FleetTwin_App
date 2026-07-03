@@ -1,0 +1,29 @@
+{
+  "mae": 0.010317430562713985,
+  "r2": 0.9999301089446851,
+  "feature_cols": [
+    "H2",
+    "CH4",
+    "C2H6",
+    "C2H4",
+    "C2H2",
+    "ratio_C2H2_C2H4",
+    "ratio_CH4_H2",
+    "ratio_C2H4_C2H6",
+    "TDCG",
+    "age_years",
+    "load_frac",
+    "ambient_temp_c",
+    "hotspot_temp_c",
+    "capacity_kva"
+  ],
+  "best_hyperparameters": {
+    "learning_rate": 0.08068318160667841,
+    "max_depth": 5,
+    "num_leaves": 51,
+    "subsample": 0.8566937342437869,
+    "colsample_bytree": 0.9999691586267455,
+    "reg_alpha": 0.10085496469368505,
+    "reg_lambda": 0.21398001166624092
+  }
+}
