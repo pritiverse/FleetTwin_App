@@ -13,7 +13,6 @@ import joblib
 import numpy as np
 import xgboost as xgb
 from sklearn.calibration import CalibratedClassifierCV
-from sklearn.frozen import FrozenEstimator
 from sklearn.preprocessing import LabelEncoder
 
 BASE = os.path.dirname(os.path.abspath(__file__))
@@ -51,14 +50,12 @@ def _xgb_classifier(max_depth: int) -> xgb.XGBClassifier:
 
 def _fit_calibrator(prefit_model, X_cal, y_cal):
     """
-    Calibrate an already-fitted model.
-
-    scikit-learn 1.6+ replaced cv="prefit" with FrozenEstimator. This project
-    targets current sklearn, so use the supported API directly.
+    Calibrate an already-fitted model using the 'prefit' strategy.
     """
+    # The `cv="prefit"` option assumes the estimator is already fitted
+    # and uses the data provided (X_cal, y_cal) for calibration.
     calibrator = CalibratedClassifierCV(
-        estimator=FrozenEstimator(prefit_model),
-        method="isotonic",
+        estimator=prefit_model, method="isotonic", cv="prefit"
     )
     calibrator.fit(X_cal, y_cal)
     return calibrator
