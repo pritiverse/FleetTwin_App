@@ -134,6 +134,16 @@ def load_models():
 
 
 # ---------------------------------------------------------------------------
+# Web Dashboard
+# ---------------------------------------------------------------------------
+
+@app.get("/", response_class=HTMLResponse)
+def dashboard(request: Request):
+    """Serve the FleetTwin web dashboard."""
+    return templates.TemplateResponse(request, "dashboard.html", {"request": request})
+
+
+# ---------------------------------------------------------------------------
 # JSON API
 # ---------------------------------------------------------------------------
 
